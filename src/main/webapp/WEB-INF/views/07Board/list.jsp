@@ -17,7 +17,7 @@
 
 	<!-- 검색폼 -->
 	<form method="get">
-	<table border="1" width="90%">
+	<table class="table table-bordered" width="90%">
 	<tr>
 		<td align="center">
 			<select name="searchColumn">
@@ -32,7 +32,7 @@
 	</form>
 	
 	<!-- 글쓰기버튼 -->
-	<table border="1" width="90%">
+	<table class="table" width="90%">
 		<tr>
 			<td align="right">
 				<button type="button" 
@@ -42,7 +42,7 @@
 	</table>
 	
 	<!-- table>tr*2>td*5 -->
-	<table border="1" width="90%">
+	<table class="table table-bordered" width="90%">
 		<tr class="text-center">
 			<th width="10%">번호</th>
 			<th width="*">제목</th>

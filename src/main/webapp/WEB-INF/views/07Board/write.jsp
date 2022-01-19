@@ -40,7 +40,7 @@
 	<form name="writeFrm" method="post" 
 		action="./writeAction.do" 
 		onsubmit="return checkValidate(this);">
-	<table border=1 width=800>
+	<table class="table table-bordered" width=800>
 	<colgroup>
 		<col width="25%"/>
 		<col width="*"/>
