@@ -10,8 +10,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import springboard.command.BbsCommandImpl;
+import springboard.command.DeleteActionCommand;
+import springboard.command.EditActionCommand;
+import springboard.command.EditCommand;
 import springboard.command.ListCommand;
+import springboard.command.ViewCommand;
 import springboard.command.WriteActionCommand;
+import springboard.model.JDBCTemplateDAO;
 import springboard.model.JdbcTemplateConst;
 import springboard.model.SpringBbsDTO;
 
@@ -102,6 +107,104 @@ public class BbsController {
 		
 		//뷰를 반환하지 않고, 지정된 URL(요청명)로 이동!
 		return "redirect:list.do?nowPage=1";
+	}
+	
+	
+
+	//글 상세보기
+	@RequestMapping("/board/view.do")
+	public String view(Model model, HttpServletRequest req) {
+		
+		//사용자의 요청을 저장한 request객체를 Model에 저장한 후 전달
+		model.addAttribute("req", req);
+		command = new ViewCommand();
+		command.execute(model);
+		
+		return "07Board/view";
+	}
+	
+	
+	//수정/삭제시 패스워드 검증 페이지 진입
+	@RequestMapping("/board/password.do")
+	public String password(Model model, HttpServletRequest req) {
+		
+		//일련번호는 컨트롤러에서 파라미터를 받은 후 Model에 저장하여 View로 전달
+		model.addAttribute("idx", req.getParameter("idx"));
+		return "07Board/password";
+	}
+	
+	//패스워드 검증 작업
+	@RequestMapping("/board/passwordAction.do")
+	public String passwordAction(Model model, HttpServletRequest req) {
+		
+		String modePage = null;
+		//폼값받기
+		String mode = req.getParameter("mode");
+		String idx = req.getParameter("idx");
+		String nowPage = req.getParameter("nowPage");
+		String pass = req.getParameter("pass");
+		
+		//DAO에서 일련번호와 패스워드를 통해 검증
+		JDBCTemplateDAO dao = new JDBCTemplateDAO();
+		
+		int rowExist = dao.password(idx, pass);
+		
+		if(rowExist<=0) {
+			//패스워드 검증 실패시에는 오류메세지와 패스워드 검증 페이지 반환
+			model.addAttribute("isCorrMsg", "패스워드가 일치하지 않습니다.");
+			model.addAttribute("idx", idx);
+			
+			modePage = "07Board/password";
+		}
+		else {
+			//검증 성공 시 수정 혹은 삭제처리
+			System.out.println("검증완료");
+		}
+		
+		if(mode.equals("edit")) {
+			//mode가 수정이면 수정폼으로 이동
+			model.addAttribute("req", req);
+			command = new EditCommand();
+			command.execute(model);
+			
+			modePage = "07Board/edit";
+		}
+		else if(mode.equals("delete")) {
+			
+			model.addAttribute("req", req);
+			command = new DeleteActionCommand();
+			command.execute(model);
+			
+			//삭제후에는 리스트페이지로 이동
+			model.addAttribute("nowPage", req.getParameter("nowPage"));
+			modePage = "redirect:list.do";
+		}
+		return modePage;
+	}
+	
+	//수정처리
+	@RequestMapping("/board/editAction.do")
+	public String editAction(HttpServletRequest req,
+			Model model, SpringBbsDTO springBbsDTO) {
+		
+		/*
+		request내장객체와 수정페이지에서 전송한 모든 폼값을 저장한
+		DTO객체를 Model에 저장한 후 서비스객체로 전달한다.
+		 */
+		model.addAttribute("req", req);
+		model.addAttribute("springBbsDTO", springBbsDTO);
+		command = new EditActionCommand();
+		command.execute(model);
+		
+		/*
+		수정처리가 완료되면 상세페이지로 이동하게 되는데 이때 idx
+		파라미터가 필요하다. Model객체에 저장한 후 redirect하면  
+		자동으로 쿼리스트링 형태로 만들어준다.
+		 */
+		model.addAttribute("idx", req.getParameter("idx"));
+		model.addAttribute("nowPage", req.getParameter("nowPage"));
+		
+		return "redirect:view.do";
 	}
 	
 }

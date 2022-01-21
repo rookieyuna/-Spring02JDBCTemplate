@@ -120,7 +120,7 @@
 		<!-- 새로운 dependency 반드시 test 아래에 넣어야함!!!!!!!! -->
 		
 		<!-- JDBC설정을 위한 의존설정(오라클 드라이버) -->
-		<dependency>  
+		<dependency>
 			<groupId>com.oracle</groupId>
 			<artifactId>ojdbc6</artifactId>
 			<version>11.2.0.3</version>
